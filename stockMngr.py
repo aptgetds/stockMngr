@@ -69,6 +69,17 @@ class stockTransaction:
 			self.isSell = True
 		self.currency = currency
 
+class stockPosition:
+	stockSymbol = None
+	quantity = None
+	price = None
+	currency = None
+	def __init__(self, symbol, quantity, price, currency):
+		self.stockSymbol = symbol
+		self.quantity = quantity
+		self.price = price
+		self.currency = currency
+
 class currencyTransaction:
 	uCurrencySell = None
 	uCurrencyBuy = None
@@ -101,9 +112,9 @@ class cashTransfer:
 	currency = None
 	def __init__(self, transType, date, amount, currency):
 		if(transType=='Deposit'):
-			isDeposit = True
+			self.isDeposit = True
 		elif(transType=='Withdrawal'):
-			isWithdrawal = True
+			self.isWithdrawal = True
 		self.date = date
 		self.amount = amount
 		self.currency = currency
@@ -132,21 +143,30 @@ class account:
 	divTransDict = defaultdict(list)
 	rebatesList = list()
 	cashTransList = list()
-#	openStockTransDict = defaultdict(list)
-#	openOptionsTransDict = defaultdict(list)
-#	closedStockTransDict = defaultdict(list)
+	stockPosDict = defaultdict(list)
+	optionPosDict = defaultdict(list)
+#	openStockPosDict = defaultdict(list)
+#	openOptionsPosDict = defaultdict(list)
+#	closedStockPosDict = defaultdict(list)
 #	closedOptionsTransDict = defaultdict(list)
 #	totalRebates = None
 #	totalDivPay = None
-	def __init__(self):
-		pass
+	def stockTrans2stockPos(self):
+		for key, value in self.stockTransDict.iteritems():
+			tempQuantity = 0
+			tempPrice = 0
+			for item in value:
+				tempPrice = ((tempQuantity*tempPrice)+(item.price*item.quantity))/(tempQuantity+item.quantity)
+				tempQuantity += item.quantity
+			print key + ' ' + str(tempQuantity) + ' ' + str(tempPrice) + ' ' + value[0].currency
+			self.stockPosDict[key].append(stockPosition(key,tempQuantity,tempPrice,value[0].currency))
 
 def readInData():
 	with open('stocks.csv', 'rb') as csvfile:
 		reader = csv.reader(csvfile)
 		try:
 			for row in reader:
-					myAccount.stockTransDict[row[1]].append(stockTransaction(row[1],row[4],row[5],row[0],row[6],row[3],row[2]))
+					myAccount.stockTransDict[row[1]].append(stockTransaction(row[1],int(row[4]),float(row[5]),row[0],float(row[6]),row[3],row[2]))
 		except csv.Error as e:
 			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
@@ -206,14 +226,14 @@ if __name__ == "__main__":
 	resizeTerminal()
 	myAccount = account()
 	readInData()
-	print(myAccount.stockTransDict.keys())
-	print(myAccount.stockTransDict['AMD'][0].date)
-	print(myAccount.stockTransDict['AMD'][1].date)
-	print(myAccount.optionsTransDict.keys())
-	print(myAccount.optionsTransDict['AMD'].keys())
-	print(myAccount.optionsTransDict['AMD']['10/27/13'].keys())
-	print(myAccount.currencyTransList[1].amountBought)
-	print(myAccount.rebatesList[1].amount)
-	print(myAccount.divTransDict['RY.TO'][0].dividendPerShare)
-	print(myAccount.cashTransList[0].amount)
-
+#	print(myAccount.stockTransDict.keys())
+#	print(myAccount.stockTransDict['AMD'][0].date)
+#	print(myAccount.stockTransDict['AMD'][1].date)
+#	print(myAccount.optionsTransDict.keys())
+#	print(myAccount.optionsTransDict['AMD'].keys())
+#	print(myAccount.optionsTransDict['AMD']['10/27/13'].keys())
+#	print(myAccount.currencyTransList[1].amountBought)
+#	print(myAccount.rebatesList[1].amount)
+#	print(myAccount.divTransDict['RY.TO'][0].dividendPerShare)
+#	print(myAccount.cashTransList[0].amount)
+	myAccount.stockTrans2stockPos()
