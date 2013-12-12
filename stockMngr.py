@@ -75,7 +75,7 @@ class currencyTransaction:
 	date = None
 	amountSold = None
 	amountBought = None
-	def __init__(uCurrencySell, uCurrencyBuy, date, amountSold, amountBought):
+	def __init__(self, uCurrencySell, uCurrencyBuy, date, amountSold, amountBought):
 		self.uCurrencySell = uCurrencySell
 		self.uCurrencyBuy = uCurrencyBuy
 		self.date = date
@@ -87,19 +87,23 @@ class rebate:
 	date = None
 	amount = None
 	currency = None
-	def __init__(description, date, amount, currency):
+	def __init__(self, description, date, amount, currency):
 		self.description = description
 		self.date = date
 		self.amount = amount
 		self.currency = currency
 
 class cashTransfer:
-	isDeposit = None
+	isDeposit = False
+	isWithdrawal = False
 	date = None
 	amount = None
 	currency = None
-	def __init__(isDeposit, date, amount, currency):
-		self.isDeposit = isDeposit
+	def __init__(self, transType, date, amount, currency):
+		if(transType=='Deposit'):
+			isDeposit = True
+		elif(transType=='Withdrawal'):
+			isWithdrawal = True
 		self.date = date
 		self.amount = amount
 		self.currency = currency
@@ -111,28 +115,30 @@ class dividendPayment:
 	date = None
 	dateRecord = None
 	datePayment = None
-	def __init__(uStock, date, dateRecord, datePayment, shareQuantity, dividendPerShare):
+	currency = None
+	def __init__(self, uStock, date, dateRecord, datePayment, shareQuantity, dividendPerShare, currency):
 		self.uStock = uStock
 		self.date = date
 		self.dateRecord = dateRecord
 		self.datePayment = datePayment
 		self.shareQuantity = shareQuantity
 		self.dividendPerShare = dividendPerShare
+		self.currency = currency
 
 class account:
 	stockTransDict = defaultdict(list)
 	optionsTransDict = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
-	currencyTransDict = defaultdict(list)
+	currencyTransList = list()
 	divTransDict = defaultdict(list)
 	rebatesList = list()
-	cashBalanceDict = defaultdict()
-	openStockTransDict = defaultdict(list)
-	openOptionsTransDict = defaultdict(list)
-	closedStockTransDict = defaultdict(list)
-	closedOptionsTransDict = defaultdict(list)
-	totalRebates = None
-	totalDivPay = None
-	def __init__(test):
+	cashTransList = list()
+#	openStockTransDict = defaultdict(list)
+#	openOptionsTransDict = defaultdict(list)
+#	closedStockTransDict = defaultdict(list)
+#	closedOptionsTransDict = defaultdict(list)
+#	totalRebates = None
+#	totalDivPay = None
+	def __init__(self):
 		pass
 
 def readInData():
@@ -152,11 +158,11 @@ def readInData():
 		except csv.Error as e:
 			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
-"""	with open('currency.csv', 'rb') as csvfile:
+	with open('currency.csv', 'rb') as csvfile:
 		reader = csv.reader(csvfile)
 		try:
 			for row in reader:
-				print(', '.join(row))
+				myAccount.currencyTransList.append(currencyTransaction(row[2],row[1],row[0],row[4],row[3]))
 		except csv.Error as e:
 			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
@@ -164,7 +170,7 @@ def readInData():
 		reader = csv.reader(csvfile)
 		try:
 			for row in reader:
-				print(', '.join(row))
+				myAccount.rebatesList.append(rebate(row[1],row[0],row[2],row[3]))
 		except csv.Error as e:
 			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
@@ -172,7 +178,7 @@ def readInData():
 		reader = csv.reader(csvfile)
 		try:
 			for row in reader:
-				print(', '.join(row))
+				myAccount.divTransDict[row[1]].append(dividendPayment(row[1],row[0],row[2],row[3],row[4],row[5],row[6]))
 		except csv.Error as e:
 			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
@@ -180,9 +186,9 @@ def readInData():
 		reader = csv.reader(csvfile)
 		try:
 			for row in reader:
-				print(', '.join(row))
+				myAccount.cashTransList.append(cashTransfer(row[1],row[0],row[2],row[3]))
 		except csv.Error as e:
-			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))"""
+			sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
 def resizeTerminal():
 	id_cmd='xdotool getactivewindow'
@@ -206,4 +212,8 @@ if __name__ == "__main__":
 	print(myAccount.optionsTransDict.keys())
 	print(myAccount.optionsTransDict['AMD'].keys())
 	print(myAccount.optionsTransDict['AMD']['10/27/13'].keys())
+	print(myAccount.currencyTransList[1].amountBought)
+	print(myAccount.rebatesList[1].amount)
+	print(myAccount.divTransDict['RY.TO'][0].dividendPerShare)
+	print(myAccount.cashTransList[0].amount)
 
