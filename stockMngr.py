@@ -156,8 +156,13 @@ class account:
 			tempQuantity = 0
 			tempPrice = 0
 			for item in value:
-				tempPrice = ((tempQuantity*tempPrice)+(item.price*item.quantity))/(tempQuantity+item.quantity)
-				tempQuantity += item.quantity
+				if(item.isBuy==True):
+					tempPrice = ((tempQuantity*tempPrice)+(item.price*item.quantity))/(tempQuantity+item.quantity)
+					tempQuantity += item.quantity
+				elif(item.isSell==True):
+					tempQuantity -= item.quantity
+				else:
+					print('Error malformed stock transaction item')
 			print key + ' ' + str(tempQuantity) + ' ' + str(tempPrice) + ' ' + value[0].currency
 			self.stockPosDict[key].append(stockPosition(key,tempQuantity,tempPrice,value[0].currency))
 
