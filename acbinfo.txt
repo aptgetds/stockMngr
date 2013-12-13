@@ -12,9 +12,9 @@ C(new) = C(old) - u ACB(old)     Units sold at the Adjusted Cost Base
 U(new) = U(old) - u     You have u fewer units
 ACB(new) = C(new)/U(new) = ACB(old)
 
-After dividend for $d for u units
-C(new) = C(old) - d*u
-U(new) = U(old)
+After dividend revistment for $d for u units
+C(new) = C(old) + d
+U(new) = U(old) + u
 ACB(new) = C(new)/U(new)
 
 Capital Gain = Proceeds of Sale - u ACB(old)
