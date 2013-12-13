@@ -1,0 +1,23 @@
+C = Cost of Purchases
+U = Total Units Held
+ACB = Adjusted Cost Base = C/U
+
+After a purchase of u units, costing $c (including commissions):
+C(new) = C(old) + c     You've spent c more dollars
+U(new) = U(old) + u     You have u additional units
+ACB(new) = C(new)/U(new)
+
+After a sale of u units
+C(new) = C(old) - u ACB(old)     Units sold at the Adjusted Cost Base
+U(new) = U(old) - u     You have u fewer units
+ACB(new) = C(new)/U(new) = ACB(old)
+
+After dividend for $d for u units
+C(new) = C(old) - d*u
+U(new) = U(old)
+ACB(new) = C(new)/U(new)
+
+Capital Gain = Proceeds of Sale - u ACB(old)
+where Proceeds of Sale is after redemption fees, etc. have been deducted.
+
+
